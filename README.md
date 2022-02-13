@@ -13,4 +13,5 @@ BikeShare project to analyze bike renting in 3 major cities.
 bikeshare_2.py is the core file with the code, there are other 3 data files with `.csv` extension.
 
 ### Credits
-It's important to give proper credit. Add links to any repo that inspired you or blogposts you consulted.
+https://pandas.pydata.org/docs/reference/index.html
+https://stackoverflow.com
