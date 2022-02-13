@@ -193,6 +193,7 @@ def display_data(df):
         if res == 'yes':
             # print first 5 records
             print(df.head())
+            # does the user want to continue
             while True:
                 print('Do you want to see next 5 lines of the data? (yes, no)')
                 nested_res = input().lower()
@@ -202,6 +203,7 @@ def display_data(df):
                 elif nested_res == 'yes':
                     idx += 5
                     print(df[idx: idx + 5])
+                    # not enough records, break
                     if idx >= length_of_records:
                         break
             break
