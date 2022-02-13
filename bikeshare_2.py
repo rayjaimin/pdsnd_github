@@ -182,12 +182,16 @@ def user_stats(df):
 
 def display_data(df):
     idx = 0
+    # till user says "no" or we have data
     while True:
         print('Do you want to see 5 lines of raw data? (yes, no)')
         res = input().lower()
+        # break on "no"
         if res == 'no':
             break
+        # show data on yes
         if res == 'yes':
+            # print first 5 records
             print(df.head())
             while True:
                 print('Do you want to see next 5 lines of the data? (yes, no)')
