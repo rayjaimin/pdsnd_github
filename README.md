@@ -7,7 +7,7 @@
 BikeShare Udacity python project.
 
 ### Description
-BikeShare project to analyze bike renting in 3 major cities.
+BikeShare project to analyze bike renting in 3 major cities (namely chicago, new york and washington).
 
 ### Files used
 bikeshare_2.py is the core file with the code, there are other 3 data files with `.csv` extension.
