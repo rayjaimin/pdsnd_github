@@ -1,3 +1,4 @@
+from ast import While
 import time
 import pandas as pd
 import numpy as np
@@ -65,8 +66,8 @@ def load_data(city, month, day):
 
     # extract month and day of week from Start Time to create new columns
     df['month'] = df['Start Time'].dt.month
-    
-    df['day_of_week'] = df['Start Time'].dt.weekday_name 
+
+    df['day_of_week'] = df['Start Time'].dt.weekday_name
     # df['day_of_week'] = df['Start Time'].dt.day_name()
 
     # filter by month if applicable
@@ -93,17 +94,19 @@ def time_stats(df):
     start_time = time.time()
 
     # display the most common month
-    common_month = df['month'].mode()[0]
-    print('most common month:', MONTHS[common_month - 1].title())
+    if 'month' in df.columns:
+        common_month = df['month'].mode()[0]
+        print('most common month:', MONTHS[common_month - 1].title())
 
     # display the most common day of week
-    common_day = df['day_of_week'].mode()[0]
-    print('most common day:', common_day.title())
+    if 'day_of_week' in df.columns:
+        common_day = df['day_of_week'].mode()[0]
+        print('most common day:', common_day.title())
 
     # display the most common start hour
-    df['start hour'] = df['Start Time'].dt.hour
-    print('most common start hour:', df['start hour'].mode()[0])
-
+    if 'Start Time' in df.columns:
+        df['start hour'] = df['Start Time'].dt.hour
+        print('most common start hour:', df['start hour'].mode()[0])
 
     print("\nThis took %s seconds." % (time.time() - start_time))
     print('-'*40)
@@ -116,16 +119,19 @@ def station_stats(df):
     start_time = time.time()
 
     # display most commonly used start station
-    common_start_station = df['Start Station'].mode()[0]
-    print('most common start station: ', common_start_station.title())
+    if 'Start Station' in df.columns:
+        common_start_station = df['Start Station'].mode()[0]
+        print('most common start station: ', common_start_station.title())
 
     # display most commonly used end station
-    common_end_station = df['End Station'].mode()[0]
-    print('most common end station: ', common_end_station.title())
+    if 'End Station' in df.columns:
+        common_end_station = df['End Station'].mode()[0]
+        print('most common end station: ', common_end_station.title())
 
     # display most frequent combination of start station and end station trip
-    common_pair = df.groupby('Start Station')['End Station'].value_counts().idxmax()
-    print('most common pair: ', common_pair)
+    if df.columns.isin({ 'Start Station' , 'End Station'}).all():
+        common_pair = df.groupby('Start Station')['End Station'].value_counts().idxmax()
+        print('most common pair: ', common_pair)
 
     print("\nThis took %s seconds." % (time.time() - start_time))
     print('-'*40)
@@ -137,11 +143,13 @@ def trip_duration_stats(df):
     print('\nCalculating Trip Duration...\n')
     start_time = time.time()
 
-    # display total travel time
-    print('total travel time: ', df['Trip Duration'].sum())
+    # if Trip Duration is present
+    if 'Trip Duration' in df.columns:
+        # display total travel time
+        print('total travel time: ', df['Trip Duration'].sum())
 
-    # display mean travel time
-    print('mean travel time: ', df['Trip Duration'].mean())
+        # display mean travel time
+        print('mean travel time: ', df['Trip Duration'].mean())
 
 
     print("\nThis took %s seconds." % (time.time() - start_time))
@@ -155,19 +163,51 @@ def user_stats(df):
     start_time = time.time()
 
     # Display counts of user types
-    print('user types count: ', df['User Type'].value_counts())
+    if 'User Type' in df.columns:
+        print('user types count: ', df['User Type'].value_counts())
 
     # Display counts of gender
-    print('gender counts: ', df['Gender'].value_counts())
+    if 'Gender' in df.columns:
+        print('gender counts: ', df['Gender'].value_counts())
 
     # Display earliest, most recent, and most common year of birth
-    df['Birth Year'] = pd.to_numeric(df['Birth Year'])
-    print('most earliest year: ', df['Birth Year'].min())
-    print('most recent year: ', df['Birth Year'].max())
-    print('most common year: ', df['Birth Year'].mode()[0])
+    if 'Birth Year' in df.columns:
+        df['Birth Year'] = pd.to_numeric(df['Birth Year'])
+        print('most earliest year: ', df['Birth Year'].min())
+        print('most recent year: ', df['Birth Year'].max())
+        print('most common year: ', df['Birth Year'].mode()[0])
 
     print("\nThis took %s seconds." % (time.time() - start_time))
     print('-'*40)
+
+def display_data(df):
+    idx = 0
+    # till user says "no" or we have data
+    while True:
+        print('Do you want to see 5 lines of raw data? (yes, no)')
+        res = input().lower()
+        # break on "no"
+        if res == 'no':
+            break
+        # show data on yes
+        if res == 'yes':
+            # print first 5 records
+            print(df.head())
+            # does the user want to continue
+            while True:
+                print('Do you want to see next 5 lines of the data? (yes, no)')
+                nested_res = input().lower()
+                length_of_records = len(df.index)
+                if nested_res == 'no':
+                    break
+                elif nested_res == 'yes':
+                    idx += 5
+                    print(df[idx: idx + 5])
+                    # not enough records, break
+                    if idx >= length_of_records:
+                        break
+            break
+
 
 
 def main():
@@ -179,6 +219,7 @@ def main():
         station_stats(df)
         trip_duration_stats(df)
         user_stats(df)
+        display_data(df)
 
         restart = input('\nWould you like to restart? Enter yes or no.\n')
         if restart.lower() != 'yes':
